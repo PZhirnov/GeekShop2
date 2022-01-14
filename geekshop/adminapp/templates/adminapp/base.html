@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>
+        {% block title %}
+            {{ title|title }}
+        {% endblock %}
+    </title>
+    <!-- Блок стилей -->
+   {% block css %}
+
+   {% endblock %}
+
+    <!-- Блок для скриптов -->
+    {% block js %}
+
+    {% endblock %}
+</head>
+
+    <body>
+          <div class="admin_container">
+            <div class="h2 text-center head">
+              {{ title|title }}
+            </div>
+                {% block menu %}
+                  <div class="admin_menu">
+                    {% include 'adminapp/includes/inc_menu.html' %}
+                  </div>
+                {% endblock %}
+
+
+                {% block content %}
+
+                {% endblock %}
+          </div>
+    </body>
+
+</html>
