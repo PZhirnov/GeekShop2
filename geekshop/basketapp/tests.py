@@ -44,3 +44,5 @@ class BasketTests(TestCase):
               f"Расчетное значение: {sum_in_basket}")
         # если все корректно, то не будет ошибки
         self.assertEqual(sum_in_basket, products_in_user_basket[0].total_cost)
+
+

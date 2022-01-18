@@ -34,6 +34,9 @@ class BasketListView(ListView):
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
+    def get_queryset(self):
+        return Basket.objects.filter(user=self.request.user).order_by('product__category')
+
 
 @login_required
 def basket_add(request, pk):

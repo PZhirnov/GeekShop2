@@ -23,3 +23,5 @@ class ModelTests(TestCase):
         # В данном случае решил сравнить значения до минут 2022-01-13 16:42 - или срез [:16]
         valid_val = str(now() + timedelta(hours=48))[:16]
         self.assertTrue(str(user.activation_key_expires)[:16] == valid_val)
+
+
