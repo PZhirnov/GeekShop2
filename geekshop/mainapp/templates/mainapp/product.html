@@ -3,8 +3,17 @@
 
 {% load my_tags %}
 
-{% block content %}
+	{% block menu %}
+			<div class="header clearfix">
+				<a href="index.html" class="logo"></a>
+				  {% include 'includes/main_menu.html' %}
+				<a href="#" class="search"></a>
+			</div>
+	{% endblock %}
 
+
+
+{% block content %}
 <div class="details">
     <div class="links clearfix">
       {% include 'includes/inc_categories_menu.html' %}

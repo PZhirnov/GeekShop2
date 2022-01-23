@@ -1,0 +1,16 @@
+{% extends 'authapp/base.html' %}
+{% load static %}
+
+{% block content %}
+    <h1>Пользователь: <span class="badge badge-secondary">{{ order_info.user.username }}</span></h1>
+    <form class="form-horizontal" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ status_form.as_p }}
+        <input class="form-control" type="submit" value="сохранить">
+    </form>
+    <button class="btn btn-round form-control last">
+        <a href="{% url 'adminapp:orders' %}">
+          К списку заказов
+        </a>
+    </button>
+{% endblock %}

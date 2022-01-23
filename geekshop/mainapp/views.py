@@ -183,6 +183,7 @@ def context(request):
     }
     return render(request, 'mainapp/test_context.html', content)
 
+
 # Страница продукта
 def product(request, pk):
     title = 'продукты'

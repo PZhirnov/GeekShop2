@@ -7,19 +7,11 @@
 
 
     {% block menu %}
-            <div class="hero-white">
-                <div class="header clearfix">
-                    <a href="index.html" class="logo"></a>
-                        {% include 'includes/main_menu.html' %}
-                    <a href="#" class="search"></a>
-                    <a href="{% url 'basket:view' %}" class="basket">
-						<span>
-							{% if basket %} {{ basket|length }} {% endif %}
-						</span>
-					</a>
-
-                </div>
-            </div>
+			<div class="header clearfix">
+				<a href="index.html" class="logo"></a>
+				  	{% include 'includes/main_menu.html' %}
+				<a href="#" class="search"></a>
+			</div>
     {% endblock %}
 
     {% block content %}

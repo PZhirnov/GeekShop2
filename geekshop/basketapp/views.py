@@ -1,11 +1,13 @@
-from django.shortcuts import render, HttpResponseRedirect, get_object_or_404
+from django.shortcuts import render, HttpResponseRedirect, get_object_or_404, HttpResponse
 from django.contrib.auth.decorators import login_required, user_passes_test
 from basketapp.models import Basket
 from mainapp.models import Product
 from django.template.loader import render_to_string
 from django.http import JsonResponse
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views.generic.list import ListView
+from django.views.generic import CreateView, DeleteView
+from django.views.generic import View
 from django.utils.decorators import method_decorator
 
 
@@ -26,44 +28,76 @@ from django.utils.decorators import method_decorator
 #     }
 #     return render(request, 'basketapp/basket.html', content)
 
+@method_decorator(login_required, name='dispatch')
 class BasketListView(ListView):
     model = Basket
     template_name = 'basketapp/basket.html'
 
-    # @method_decorator(user_passes_test(lambda u: u.is_superuser))
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
-
     def get_queryset(self):
         return Basket.objects.filter(user=self.request.user).order_by('product__category')
 
-
-@login_required
-def basket_add(request, pk):
-    print(request.META.get('HTTP_REFERER'))
-    if 'login' in request.META.get('HTTP_REFERER'):
-        return HttpResponseRedirect(reverse('products:product', args=[pk]))
-
-    product = get_object_or_404(Product, pk=pk)
-    basket = Basket.objects.filter(user=request.user, product=product).first()
-
-    if not basket:
-        basket = Basket(user=request.user, product=product)
-    basket.quantity += 1
-    basket.save()
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        basket_items = Basket.objects.filter(user=self.request.user).order_by('product__category')
+        context['basket_items'] = basket_items
+        return context
 
 
-@login_required
-def basket_remove(request, pk):
-    basket_record = get_object_or_404(Basket, pk=pk)
-    basket_record.delete()
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+# CreateView
+# @login_required
+# def basket_add(request, pk):
+#     print(request.META['REMOTE_ADDR'])
+#     if 'login' in request.META.get('HTTP_REFERER'):
+#         return HttpResponseRedirect(reverse('products:product', args=[pk]))
+#
+#     product = get_object_or_404(Product, pk=pk)
+#     basket = Basket.objects.filter(user=request.user, product=product).first()
+#
+#     if not basket:
+#         basket = Basket(user=request.user, product=product)
+#     basket.quantity += 1
+#     basket.save()
+#     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
+@method_decorator(login_required, name='dispatch')
+class BasketAddView(View):
+
+    def get(self, request, pk):
+        print(request.user, pk)
+        product = get_object_or_404(Product, pk=pk)
+        basket = Basket.objects.filter(user=self.request.user, product=product).first()
+        if not basket:
+            basket = Basket(user=request.user, product=product)
+        basket.quantity += 1
+        basket.save()
+        # print(request.META.get('HTTP_REFERER'))
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+# @login_required
+# def basket_remove(request, pk):
+#     basket_record = get_object_or_404(Basket, pk=pk)
+#     basket_record.delete()
+#     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+@method_decorator(login_required, name='dispatch')
+class BasketRemoveView(DeleteView):
+    model = Basket
+    success_url = reverse_lazy('basketapp:view')
+
+
+
+
+
+def is_ajax(request):
+    return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+
+# UpdateView
 @login_required
 def basket_edit(request, pk, quantity):
-    if request.is_ajax():
+    print(is_ajax(request=request))
+    if is_ajax(request=request):
         quantity = int(quantity)
         new_basket_item = Basket.objects.get(pk=int(pk))
 

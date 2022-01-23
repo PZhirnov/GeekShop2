@@ -4,22 +4,23 @@
 <head>
 	<meta charset="utf-8">
 	<title>
-        {% block title %}
-            {{ title|title }}
-        {% endblock %}
+        Покупатель: {{ object.username }}
     </title>
-
-    <!-- Блок для скриптов -->
-
 </head>
 
     <body>
           <div class="admin_container">
-              <br> ID клиента: {{ userinfo.id }}
-              <br> Имя пользователя: {{ userinfo.username }}
-              <br> Имя: {{ userinfo.first_name }}
-              <br> Фамилия: {{ userinfo.last_name }}
+              <br> ID клиента: {{ object.id }}
+              <br> Имя пользователя: {{ object.username }}
+              <br> Имя: {{ object.first_name }}
+              <br> Фамилия: {{ object.last_name }}
           </div>
+
+      <button class="btn btn-default btn-round">
+       <a href="{% url 'adminapp:orders' %}">
+           Вернуться к заказам
+       </a>
+   </button>
     </body>
 
 </html>
