@@ -2,11 +2,22 @@ from django.db import models
 from django.conf import settings
 from mainapp.models import Product
 
+
+class BasketQuerySet(models.QuerySet):
+
+    def delete(self, *args, **kwargs):
+        for object in self:
+            object.product.quantity += object.quantity
+            object.product.save()
+            super(BasketQuerySet, self).delete(*args, **kwargs)
+
+
 class Basket(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='basket')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(verbose_name='количество', default=0)
     add_datetime = models.DateTimeField(verbose_name='время', auto_now_add=True)
+    objects = BasketQuerySet.as_manager()  # Метод класса, который возвращает экземпляр Manager с копией методов QuerySet
 
     @property
     def product_cost(self):
@@ -29,5 +40,20 @@ class Basket(models.Model):
 
     @classmethod
     def get_items(self, user):
+        # print(Basket.objects.filter(user=user))
         return Basket.objects.filter(user=user)
 
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            old_basket_item = Basket.objects.get(pk=self.pk)
+            self.product.quantity = self.quantity - old_basket_item.quantity
+        else:
+            self.product.quantity -= self.quantity
+        self.product.save()
+        super(self.__class__, self).save(*args, **kwargs)
+
+    def delete(self):
+        self.product.quantity += self.quantity
+        self.product.save()
+        super(self.__class__, self).delete()  # это обеспечивает доступ к унаследованному методу

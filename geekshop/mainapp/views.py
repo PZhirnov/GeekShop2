@@ -5,6 +5,7 @@ from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import ProductCategory, Product
 from basketapp.models import Basket
+from django.http import HttpResponse, JsonResponse
 from django.views.generic.list import ListView
 from django.utils.decorators import method_decorator
 
@@ -197,3 +198,21 @@ def product(request, pk):
 
     return render(request, 'mainapp/product.html', content)
 
+
+# контроллее, который возвращает стоимость выбранного продукта
+# def product_price(request):
+#     print('сработал')
+#     id_product = request.GET.get("pk", "")
+#     product = Product.objects.get(pk=id_product)
+#     print(product.price)
+#     return HttpResponse(product.price)
+
+
+def product_price(request):
+    # print('сработал')
+    id_product = request.GET.get("pk", "")
+    product = Product.objects.get(pk=id_product)
+    if product:
+        return JsonResponse({'price': product.price})
+    else:
+        return JsonResponse({'price': 0})

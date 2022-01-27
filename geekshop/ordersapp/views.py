@@ -43,6 +43,7 @@ class OrderItemsCreate(CreateView):
                for num, form in enumerate(formset.forms):
                    form.initial['product'] = basket_items[num].product
                    form.initial['quantity'] = basket_items[num].quantity
+                   form.initial['price'] = basket_items[num].product.price
                basket_items.delete()
            else:
                formset = OrderFormSet()
@@ -76,14 +77,9 @@ class OrderItemsUpdate(UpdateView):
    fields = []
    success_url = reverse_lazy('ordersapp:orders_list')
 
-
-
    def get_context_data(self, **kwargs):
        data = super().get_context_data(**kwargs)
-       OrderFormSet = inlineformset_factory(Order,
-                                            OrderItem,
-                                            form=OrderItemForm,
-                                            extra=1)
+       OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=1)
        # если перешли из администратиной части, то и вернемся туда после сохранения
        from_admin = 'admin' in str(self.request)
        if from_admin:
@@ -92,18 +88,22 @@ class OrderItemsUpdate(UpdateView):
        if self.request.POST:
            formset = OrderFormSet(self.request.POST, instance=self.object)
        else:
-           basket_items = Basket.get_items(self.request.user)
-           if len(basket_items):
-               OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=len(basket_items))
-               formset = OrderFormSet(instance=self.object)
-               # for num, form in enumerate(formset.forms):
-               #     form.initial['product'] = basket_items[num].product
-               #     form.initial['quantity'] = basket_items[num].quantity
-               basket_items.delete()
-           else:
-               formset = OrderFormSet(instance=self.object)
-
+           formset = OrderFormSet(instance=self.object)
+           for form in formset.forms:
+               if form.instance.pk:
+                   form.initial['price'] = form.instance.product.price
        data['orderitems'] = formset
+
+
+           # basket_items = Basket.get_items(self.request.user)
+           # if len(basket_items):
+           #     OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=len(basket_items))
+           #     formset = OrderFormSet(instance=self.object)
+           #     basket_items.delete()
+           # else:
+           #     formset = OrderFormSet(instance=self.object)
+
+       # data['orderitems'] = formset
        # добавил в контекст метку, которая позволяет вернуться назад в админку, если из нее пришли в обновление заказа
        data['url_return'] = 'adminapp' if from_admin else ''
        return data
@@ -149,4 +149,3 @@ def order_forming_complete(request, pk):
    # если из админки совершили покупку, то и вернемся к заказам в админку
    revers_url = 'adminapp:orders' if 'admin' in str(request) else 'ordersapp:orders_list'
    return HttpResponseRedirect(reverse(revers_url))
-

@@ -87,9 +87,6 @@ class BasketRemoveView(DeleteView):
     success_url = reverse_lazy('basketapp:view')
 
 
-
-
-
 def is_ajax(request):
     return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
 
@@ -97,9 +94,10 @@ def is_ajax(request):
 @login_required
 def basket_edit(request, pk, quantity):
     print(is_ajax(request=request))
+    print(pk, quantity)
     if is_ajax(request=request):
-        quantity = int(quantity)
-        new_basket_item = Basket.objects.get(pk=int(pk))
+        quantity = quantity
+        new_basket_item = Basket.objects.get(pk=pk)
 
         if quantity > 0:
             new_basket_item.quantity = quantity
