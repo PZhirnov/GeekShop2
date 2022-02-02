@@ -46,6 +46,7 @@ function updateResults() {
         var target_name= row[0].querySelector('input[type="number"]').name;
         orderitem_num = parseInt(target_name.replace('orderitems-', '').replace('-quantity', ''));
         delta_quantity = -quantity_arr[orderitem_num];
+        quantity_arr[orderitem_num] = 0;
         orderSummaryUpdate(price_arr[orderitem_num], delta_quantity);
         }
 
@@ -82,8 +83,9 @@ function updateResults() {
         let priceEl = parent_el.getElementsByClassName('td3 order formset_td')
         let inputEL = parent_el.getElementsByClassName('td2 order formset_td')[0].getElementsByTagName('input');
         inputEL[0].value = 0
+        alert(window.location.hostname + '/products/productcost/')
         $.ajax({
-            url: '../../../products/productcost/',         /* отправим на сайт запроса */
+            url: 'http://127.0.0.1:8000/products/productcost/',         /* http://127.0.0.1:8000/products/productcost/ отправим на сайт запрос */
             method: 'get',             
             dataType: 'html',          
             data: {pk: id_product},     /* передадим id выбранного продукта */
@@ -92,7 +94,6 @@ function updateResults() {
                 let price_product = JSON.parse(data).price;
                 priceEl[0].innerHTML = `<span class="orderitems-${num_row}-price">${price_product}</span> руб`;
                 updateResults();
-
             }
         });
      });

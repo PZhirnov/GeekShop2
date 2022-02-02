@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path
 from mainapp.views import index, products, contact, context
 from django.conf.urls.static import static
 from django.conf import settings
@@ -37,7 +37,14 @@ urlpatterns = [
     path('admin/', include('adminapp.urls', namespace='admin')),
     path('', include('social_django.urls', namespace='social')),
     path('orders/', include('ordersapp.urls', namespace='order')),
+    path('__debug__/', include('debug_toolbar.urls')),
 ]
+
+
+# if settings.DEBUG:
+#     import
+#     urlpatterns += [re_path(r'^__debug__/', include(debug_toolbar.urls))]
+
 
 # path('products/', products, name="products"),
 ''' убираем это:

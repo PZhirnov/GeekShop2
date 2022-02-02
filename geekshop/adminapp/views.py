@@ -259,6 +259,10 @@ class ProductsList(ListView):
         print(self.request)
         return Product.objects.filter(category__pk=self.kwargs['pk'])
 
+    def get_context_data(self, **kwargs):
+        context = super(ProductsList, self).get_context_data(**kwargs)
+        context['cat_id'] = self.kwargs['pk']
+        return context
 
 # def product_create(request, pk):
 #     title = 'продукт/создание'

@@ -7,7 +7,7 @@
   <div class="products_list">
     {{ object_list.0.category.pk }}
     <button class="new_product">
-      <a href="{% url 'admin:product_create' object_list.0.category.pk %}">
+      <a href="{% url 'admin:product_create' cat_id %}">
         новый продукт
       </a>
     </button>
