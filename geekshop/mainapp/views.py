@@ -25,7 +25,7 @@ main_menu = [
 
 def get_basket(user):
     if user.is_authenticated:
-        return Basket.objects.filter(user=user)
+        return Basket.objects.filter(user=user).select_related()
     else:
         return []
 
@@ -36,7 +36,7 @@ def get_hot_product():
 
 # Похожие продукты
 def get_same_products(hot_product):
-    same_products = Product.objects.filter(category=hot_product.category).exclude(pk=hot_product.pk)[:3]
+    same_products = Product.objects.filter(category=hot_product.category).select_related().exclude(pk=hot_product.pk)[:3]
     return same_products
 
 

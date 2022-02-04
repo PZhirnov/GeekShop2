@@ -29,7 +29,7 @@ class Order(models.Model):
                               max_length=3,
                               choices=ORDER_STATUS_CHOICES,
                               default=FORMING)
-    is_active = models.BooleanField(verbose_name='активен', default=True)
+    is_active = models.BooleanField(verbose_name='активен', db_index=True, default=True)
 
     class Meta:
         ordering = ('-created',)
@@ -93,7 +93,7 @@ class OrderItem(models.Model):
 @receiver(pre_save, sender=OrderItem)
 @receiver(pre_save, sender=Basket)
 def product_quantity_update_save(sender, update_fields, instance, **kwargs):
-   if update_fields is 'quantity' or 'product':
+   if update_fields == 'quantity' or 'product':
        if instance.pk:
            instance.product.quantity -= instance.quantity - \
                                         sender.objects.get(pk=instance.pk).quantity

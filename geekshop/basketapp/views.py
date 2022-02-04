@@ -34,11 +34,11 @@ class BasketListView(ListView):
     template_name = 'basketapp/basket.html'
 
     def get_queryset(self):
-        return Basket.objects.filter(user=self.request.user).order_by('product__category')
+        return Basket.objects.filter(user=self.request.user).select_related().order_by('product__category')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        basket_items = Basket.objects.filter(user=self.request.user).order_by('product__category')
+        basket_items = Basket.objects.filter(user=self.request.user).select_related().order_by('product__category')
         context['basket_items'] = basket_items
         return context
 
@@ -68,7 +68,7 @@ class BasketAddView(View):
         product = get_object_or_404(Product, pk=pk)
         basket = Basket.objects.filter(user=self.request.user, product=product).first()
         if not basket:
-            basket = Basket(user=request.user, product=product)
+            basket = Basket(user=request.user, product=product).select_related()
         basket.quantity += 1
         basket.save()
         # print(request.META.get('HTTP_REFERER'))
@@ -105,7 +105,7 @@ def basket_edit(request, pk, quantity):
         else:
             new_basket_item.delete()
 
-        basket_items = Basket.objects.filter(user=request.user). \
+        basket_items = Basket.objects.filter(user=request.user).select_related().\
             order_by('product__category')
 
         content = {

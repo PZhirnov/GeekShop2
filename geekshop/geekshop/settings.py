@@ -26,6 +26,7 @@ SECRET_KEY = 'django-insecure-_&*5$=r4-im4br)%$mq_wk$!50w@#zsk*+o4q19ev$^ug)342x
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+PROD = False  # выбор версии
 
 ALLOWED_HOSTS = ['*']
 
@@ -150,20 +151,23 @@ WSGI_APPLICATION = 'geekshop.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    },
-    # 'default': {
-    #     'NAME': 'geekshop',
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'USER': 'django',
-    #     'PASSWORD': 'geekbrains',
-    #     'HOST': 'localhost'
-    # }
-
-}
+if not PROD:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        },
+    }
+else:
+    DATABASES = {
+        'default': {
+            'NAME': 'geekshop',
+            'ENGINE': 'django.db.backends.postgresql',
+            'USER': 'django',
+            'PASSWORD': 'geekbrains',
+            'HOST': 'localhost'
+        }
+    }
 
 
 # Password validation
@@ -202,7 +206,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# STATIC_ROOT = os.path.join(BASE_DIR, 'collected_static')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
