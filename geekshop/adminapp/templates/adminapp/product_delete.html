@@ -4,6 +4,12 @@
 
 {% block content %}
     <div class = 'confirmation'>
+        {% if object.is_active %}
+        да
+        {% else %}
+        нет
+        {% endif %}
+
         Вы уверены, что хотите удалить данный продукт " {{ object.name }}"?
         {{ object.pk }}
         <form action="{% url 'admin:product_delete' object.pk %}" method="post">
