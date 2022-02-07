@@ -16,6 +16,8 @@ from django.views.generic.detail import DetailView
 from django.utils.decorators import method_decorator
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
+
 
 # Create your views here.
 
@@ -32,7 +34,7 @@ from django.contrib.auth.decorators import login_required
 #         'objects': users_list
 #     }
 #     return render(request, 'adminapp/users.html', content)
-
+@method_decorator(never_cache, name='dispatch')
 @method_decorator(login_required, name='dispatch')
 class UsersListView(ListView):
     model = ShopUser
@@ -63,6 +65,7 @@ class UsersListView(ListView):
 #     content = {'title': title, 'update_form': user_form}
 #     return render(request, 'adminapp/user_update.html', content)
 
+@method_decorator(never_cache, name='dispatch')
 @method_decorator(login_required, name='dispatch')
 class UserCreate(CreateView):
     model = ShopUser
@@ -90,7 +93,7 @@ class UserCreate(CreateView):
 #     content = {'title': title, 'update_form': edit_form}
 #     return render(request, 'adminapp/user_update.html', content)
 
-
+@method_decorator(never_cache, name='dispatch')
 @method_decorator(login_required, name='dispatch')
 class UserUpdate(UpdateView):
     model = ShopUser
@@ -120,17 +123,31 @@ class UserUpdate(UpdateView):
 #     }
 #     return render(request, 'adminapp/user_delete.html', content)
 
+@method_decorator(never_cache, name='dispatch')
 @method_decorator(login_required, name='dispatch')
 class UserDelete(DeleteView):
     model = ShopUser
-    # template_name = 'adminapp/category_delete.html'
+    template_name = 'adminapp/user_delete.html'
     success_url = reverse_lazy('admin:users')
 
     def delete(self, request, *args, **kwarg):
         self.object = self.get_object()
-        self.object.is_active = False
-        self.object.save()
+        if self.object.is_active == False:
+            self.object.delete()
+        else:
+            self.object.is_active = False
+            self.object.save()
         return HttpResponseRedirect(self.get_success_url())
+
+    def get_context_data(self, **kwargs):
+        context = super(UserDelete, self).get_context_data(**kwargs)
+        self.object = self.get_object()
+        msg_1 = f'Данная операция сделает пользователя {self.object.username} неактивным и не удалит информацию о нем из базы.' \
+                'Повторный вызов операции приведет к его полному удалению.'
+
+        msg_2 = f"Данная операция полностью удалит пользователя {self.object.username} из базы. Продолжить?"
+        context['msg_warning'] = msg_1 if self.object.is_active else msg_2
+        return context
 
 
 # Категории
@@ -144,8 +161,9 @@ class UserDelete(DeleteView):
 #         'objects': categories_list
 #     }
 #     return render(request, 'adminapp/categories.html', content)
+@method_decorator(never_cache, name='dispatch')
 @method_decorator(login_required, name='dispatch')
-class CategoriesList (ListView):
+class CategoriesList(ListView):
     model = ProductCategory
     template_name = 'adminapp/categories.html'
 
@@ -153,7 +171,6 @@ class CategoriesList (ListView):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Категории'
         return context
-
 
 
 # def category_create(request):
@@ -167,6 +184,7 @@ class CategoriesList (ListView):
 #         category_form = ProductCategoryEditForm()
 #     content = {'title': title, 'update_form': category_form}
 #     return render(request, 'adminapp/category_update.html', content)
+@method_decorator(never_cache, name='dispatch')
 @method_decorator(login_required, name='dispatch')
 class ProductCategoryCreateView(CreateView):
     model = ProductCategory
@@ -187,6 +205,7 @@ class ProductCategoryCreateView(CreateView):
 #         edit_category_form = ProductCategoryEditForm(instance=edit_category)
 #     content = {'title': title, 'update_form': edit_category_form}
 #     return render(request, 'adminapp/category_update.html', content)
+@method_decorator(never_cache, name='dispatch')
 @method_decorator(login_required, name='dispatch')
 class ProductCategoryUpdateView(UpdateView):
     model = ProductCategory
@@ -213,6 +232,7 @@ class ProductCategoryUpdateView(UpdateView):
 #     }
 #     return render(request, 'adminapp/category_delete.html', content)
 
+@method_decorator(never_cache, name='dispatch')
 @method_decorator(login_required, name='dispatch')
 class ProductCategoryDeleteView(DeleteView):
     model = ProductCategory
@@ -249,6 +269,7 @@ class ProductCategoryDeleteView(DeleteView):
 #     return render(request, 'adminapp/products.html', content)
 
 # CBV c пагинацией - вывод в отдельный шаблон с окончанием CBV
+@method_decorator(never_cache, name='dispatch')
 @method_decorator(login_required, name='dispatch')
 class ProductsList(ListView):
     model = Product
@@ -263,6 +284,7 @@ class ProductsList(ListView):
         context = super(ProductsList, self).get_context_data(**kwargs)
         context['cat_id'] = self.kwargs['pk']
         return context
+
 
 # def product_create(request, pk):
 #     title = 'продукт/создание'
@@ -282,7 +304,7 @@ class ProductsList(ListView):
 #                }
 #     return render(request, 'adminapp/create_product.html', content)
 
-
+@method_decorator(never_cache, name='dispatch')
 @method_decorator(login_required, name='dispatch')
 class ProductCreateView(CreateView):
     model = Product
@@ -308,7 +330,7 @@ class ProductCreateView(CreateView):
 #         'category': category,
 #     }
 #     return render(request, 'adminapp/product_show.html', content)
-
+@method_decorator(never_cache, name='dispatch')
 class ProductDetailView(DetailView):
     model = Product
     template_name = 'adminapp/product_show.html'
@@ -331,7 +353,7 @@ class ProductDetailView(DetailView):
 #                }
 #     return render(request, 'adminapp/product_update.html', content)
 
-
+@method_decorator(never_cache, name='dispatch')
 @method_decorator(login_required, name='dispatch')
 class ProductUpdate(UpdateView):
     model = Product
@@ -361,6 +383,7 @@ class ProductUpdate(UpdateView):
 #     }
 #     return render(request, 'adminapp/product_delete.html', content)
 
+@method_decorator(never_cache, name='dispatch')
 @method_decorator(login_required, name='dispatch')
 class ProductDelete(DeleteView):
     model = Product
@@ -369,10 +392,12 @@ class ProductDelete(DeleteView):
 
     def delete(self, request, *args, **kwarg):
         self.object = self.get_object()
-        self.object.is_active = False
-        self.object.save()
+        if self.object.is_active == False:
+            self.object.delete()
+        else:
+            self.object.is_active = False
+            self.object.save()
         return HttpResponseRedirect(self.get_success_url())
-
 
 
 def admin_ajax(request):
@@ -380,6 +405,7 @@ def admin_ajax(request):
     return render(request, 'adminapp/admin_ajax.html', сontent)
 
 
+@method_decorator(never_cache, name='dispatch')
 @method_decorator(login_required, name='dispatch')
 class OrderList(ListView):
     model = Order
@@ -395,7 +421,7 @@ class OrderList(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = 'Пользователи'
+        context['title'] = 'Заказы по всем пользователям'
         return context
 
 
@@ -420,10 +446,10 @@ class OrderRead(DetailView):
     model = Order
 
     def get_context_data(self, **kwargs):
-       context = super(OrderRead, self).get_context_data(**kwargs)
-       context['title'] = 'заказ/просмотр'
-       context['url_return'] = 'adminapp'
-       return context
+        context = super(OrderRead, self).get_context_data(**kwargs)
+        context['title'] = 'заказ/просмотр'
+        context['url_return'] = 'adminapp'
+        return context
 
 
 def OrderStatus(request, pk):
