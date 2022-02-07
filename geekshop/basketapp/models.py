@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 from mainapp.models import Product
-
+from django.utils.functional import cached_property
 
 class BasketQuerySet(models.QuerySet):
 
@@ -24,19 +24,40 @@ class Basket(models.Model):
         "return cost of all products this type"
         return self.product.price * self.quantity
 
-    @property
-    def total_quantity(self):
-        "return total quantity for user"
-        _items = Basket.objects.filter(user=self.user)
-        _totalquantity = sum(list(map(lambda x: x.quantity, _items)))
-        return _totalquantity
+    @cached_property
+    def get_items_cached(self):
+        return self.user.basket.select_related()
 
-    @property
+    def total_quantity(self):
+        _items = self.get_items_cached
+        return sum(list(map(lambda x: x.quantity, _items)))
+
     def total_cost(self):
-        "return total cost for user"
-        _items = Basket.objects.filter(user=self.user)
-        _totalcost = sum(list(map(lambda x: x.product_cost, _items)))
-        return _totalcost
+        _items = self.get_items_cached
+        return sum(list(map(lambda x: x.product_cost, _items)))
+
+    # Добавлен метод, объединящий total_cost и total_quantity, чтобы протестировать  with в шаблоне
+    def basket_info(self):
+        _items = self.get_items_cached
+        basket_info = {
+            'total_quantity': sum(list(map(lambda x: x.quantity, _items))),
+            'total_cost': sum(list(map(lambda x: x.product_cost, _items))),
+        }
+        return basket_info
+    # @property
+    # def total_quantity(self):
+    #     "return total quantity for user"
+    #     _items = Basket.objects.filter(user=self.user)
+    #     _totalquantity = sum(list(map(lambda x: x.quantity, _items)))
+    #     return _totalquantity
+    #
+    # @property
+    # def total_cost(self):
+    #     "return total cost for user"
+    #     _items = Basket.objects.filter(user=self.user)
+    #     _totalcost = sum(list(map(lambda x: x.product_cost, _items)))
+    #     return _totalcost
+    #
 
     @classmethod
     def get_items(self, user):
