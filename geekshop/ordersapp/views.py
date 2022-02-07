@@ -13,28 +13,28 @@ from ordersapp.forms import OrderItemForm
 
 
 class OrderList(ListView):
-   model = Order
+    model = Order
 
-   def get_queryset(self):
-       return Order.objects.filter(user=self.request.user)
+    def get_queryset(self):
+        return Order.objects.filter(user=self.request.user)
 
 
 class OrderItemsCreate(CreateView):
-   model = Order
-   fields = []
-   success_url = reverse_lazy('ordersapp:orders_list')
+    model = Order
+    fields = []
+    success_url = reverse_lazy('ordersapp:orders_list')
 
-   def get_context_data(self, **kwargs):
-       data = super(OrderItemsCreate, self).get_context_data(**kwargs)
-       OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=1)
+    def get_context_data(self, **kwargs):
+        data = super(OrderItemsCreate, self).get_context_data(**kwargs)
+        OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=1)
 
-       from_admin = 'admin' in str(self.request)
-       if from_admin:
+        from_admin = 'admin' in str(self.request)
+        if from_admin:
            self.success_url = reverse_lazy('adminapp:orders')
 
-       if self.request.POST:
+        if self.request.POST:
            formset = OrderFormSet(self.request.POST)
-       else:
+        else:
            basket_items = Basket.get_items(self.request.user)
            if len(basket_items):
                OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=len(basket_items))
@@ -49,51 +49,51 @@ class OrderItemsCreate(CreateView):
                formset = OrderFormSet()
 
 
-       data['orderitems'] = formset
-       # добавил в контекст метку, которая позволяет вернуться назад в админку, если из нее пришли в обновление заказа
-       data['url_return'] = 'adminapp' if from_admin else ''
-       return data
+        data['orderitems'] = formset
+        # добавил в контекст метку, которая позволяет вернуться назад в админку, если из нее пришли в обновление заказа
+        data['url_return'] = 'adminapp' if from_admin else ''
+        return data
 
-   def form_valid(self, form):
-       context = self.get_context_data()
-       orderitems = context['orderitems']
+    def form_valid(self, form):
+        context = self.get_context_data()
+        orderitems = context['orderitems']
 
-       with transaction.atomic():
-           form.instance.user = self.request.user
-           self.object = form.save()
-           if orderitems.is_valid():
+        with transaction.atomic():
+            form.instance.user = self.request.user
+            self.object = form.save()
+            if orderitems.is_valid():
                orderitems.instance = self.object
                orderitems.save()
 
-       # удаляем пустой заказ
-       if self.object.get_total_cost() == 0:
-           self.object.delete()
+        # удаляем пустой заказ
+        if self.object.get_total_cost() == 0:
+            self.object.delete()
 
-       return super(OrderItemsCreate, self).form_valid(form)
+        return super(OrderItemsCreate, self).form_valid(form)
 
 
 class OrderItemsUpdate(UpdateView):
-   model = Order
-   fields = []
-   success_url = reverse_lazy('ordersapp:orders_list')
+    model = Order
+    fields = []
+    success_url = reverse_lazy('ordersapp:orders_list')
 
-   def get_context_data(self, **kwargs):
-       data = super().get_context_data(**kwargs)
-       OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=1)
-       # если перешли из администратиной части, то и вернемся туда после сохранения
-       from_admin = 'admin' in str(self.request)
-       if from_admin:
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=1)
+        # если перешли из администратиной части, то и вернемся туда после сохранения
+        from_admin = 'admin' in str(self.request)
+        if from_admin:
            self.success_url = reverse_lazy('adminapp:orders')
 
-       if self.request.POST:
+        if self.request.POST:
            formset = OrderFormSet(self.request.POST, instance=self.object)
-       else:
+        else:
            queryset = self.object.orderitems.select_related()
            formset = OrderFormSet(instance=self.object, queryset=queryset)
            for form in formset.forms:
                if form.instance.pk:
                    form.initial['price'] = form.instance.product.price
-       data['orderitems'] = formset
+        data['orderitems'] = formset
 
 
            # basket_items = Basket.get_items(self.request.user)
@@ -104,12 +104,12 @@ class OrderItemsUpdate(UpdateView):
            # else:
            #     formset = OrderFormSet(instance=self.object)
 
-       # data['orderitems'] = formset
-       # добавил в контекст метку, которая позволяет вернуться назад в админку, если из нее пришли в обновление заказа
-       data['url_return'] = 'adminapp' if from_admin else ''
-       return data
+        # data['orderitems'] = formset
+        # добавил в контекст метку, которая позволяет вернуться назад в админку, если из нее пришли в обновление заказа
+        data['url_return'] = 'adminapp' if from_admin else ''
+        return data
 
-   def form_valid(self, form):
+    def form_valid(self, form):
        context = self.get_context_data()
        orderitems = context['orderitems']
 
@@ -120,33 +120,34 @@ class OrderItemsUpdate(UpdateView):
                orderitems.save()
 
        # удаляем пустой заказ
-       if self.object.get_total_cost() == 0:
+       if self.object.get_summary().get('total_cost') == 0:
            self.object.delete()
        return super(OrderItemsUpdate, self).form_valid(form)
 
 
 class OrderDelete(DeleteView):
-   model = Order
-   success_url = reverse_lazy('ordersapp:orders_list')
+    model = Order
+    success_url = reverse_lazy('ordersapp:orders_list')
+
 
 class OrderDeleteAdmin(DeleteView):
-   model = Order
-   success_url = reverse_lazy('adminapp:orders')
+    model = Order
+    success_url = reverse_lazy('adminapp:orders')
 
 
 class OrderRead(DetailView):
-   model = Order
+    model = Order
 
-   def get_context_data(self, **kwargs):
-       context = super(OrderRead, self).get_context_data(**kwargs)
-       context['title'] = 'заказ/просмотр'
-       return context
+    def get_context_data(self, **kwargs):
+        context = super(OrderRead, self).get_context_data(**kwargs)
+        context['title'] = 'заказ/просмотр'
+        return context
 
 
 def order_forming_complete(request, pk):
-   order = get_object_or_404(Order, pk=pk)
-   order.status = Order.SENT_TO_PROCEED
-   order.save()
-   # если из админки совершили покупку, то и вернемся к заказам в админку
-   revers_url = 'adminapp:orders' if 'admin' in str(request) else 'ordersapp:orders_list'
-   return HttpResponseRedirect(reverse(revers_url))
+    order = get_object_or_404(Order, pk=pk)
+    order.status = Order.SENT_TO_PROCEED
+    order.save()
+    # если из админки совершили покупку, то и вернемся к заказам в админку
+    revers_url = 'adminapp:orders' if 'admin' in str(request) else 'ordersapp:orders_list'
+    return HttpResponseRedirect(reverse(revers_url))
