@@ -201,7 +201,7 @@ def index(request):
 #     return render(request, 'mainapp/products.html', content)
 
 
-@never_cache
+# @never_cache
 def products(request, pk=None, page=1):
     title = 'продукты'
     # links_menu = ProductCategory.objects.filter(is_active=True)

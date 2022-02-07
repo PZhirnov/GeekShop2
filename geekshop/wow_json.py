@@ -1,7 +1,7 @@
 import json
 import os.path
 
-with open(r'mainapp\json_products\products.json', "r", encoding='utf8') as jsonfile:
+with open(r'mainapp/json/contacts.json', "r", encoding='utf8') as jsonfile:
     data = json.load(jsonfile)
 
 

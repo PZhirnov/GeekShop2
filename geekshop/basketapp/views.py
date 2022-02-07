@@ -9,6 +9,8 @@ from django.views.generic.list import ListView
 from django.views.generic import CreateView, DeleteView
 from django.views.generic import View
 from django.utils.decorators import method_decorator
+from django.utils.functional import cached_property
+from django.views.decorators.cache import never_cache
 
 
 # метод по условию ДЗ -
@@ -28,17 +30,24 @@ from django.utils.decorators import method_decorator
 #     }
 #     return render(request, 'basketapp/basket.html', content)
 
+@method_decorator(never_cache, name='dispatch')
 @method_decorator(login_required, name='dispatch')
 class BasketListView(ListView):
     model = Basket
     template_name = 'basketapp/basket.html'
 
-    def get_queryset(self):
+
+    def get_basket_user_cache(self):
         return Basket.objects.filter(user=self.request.user).select_related().order_by('product__category')
+
+    def get_queryset(self):
+        # return Basket.objects.filter(user=self.request.user).select_related().order_by('product__category')
+        return self.get_basket_user_cache
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        basket_items = Basket.objects.filter(user=self.request.user).select_related().order_by('product__category')
+        # basket_items = Basket.objects.filter(user=self.request.user).select_related().order_by('product__category')
+        basket_items = self.get_basket_user_cache
         context['basket_items'] = basket_items
         return context
 
@@ -68,7 +77,7 @@ class BasketAddView(View):
         product = get_object_or_404(Product, pk=pk)
         basket = Basket.objects.filter(user=self.request.user, product=product).first()
         if not basket:
-            basket = Basket(user=request.user, product=product).select_related()
+            basket = Basket(user=request.user, product=product)
         basket.quantity += 1
         basket.save()
         # print(request.META.get('HTTP_REFERER'))

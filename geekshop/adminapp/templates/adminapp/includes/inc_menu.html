@@ -1,33 +1,40 @@
-<ul class="menu">
-  <li>
-    <a href="{% url 'index' %}">
-      на сайт
-    </a>
-  </li>
-  <li>
-    <a href="{% url 'admin:users' %}"
-       class="{% if request.resolver_match.url_name == 'users' %}
-                active
-              {% endif %}">
-      пользователи
-    </a>
-  </li>
-  <li>
-    <a href="{% url 'admin:categories' %}"
-       class="{% if request.resolver_match.url_name == 'categories' or request.resolver_match.url_name == category.name %}
-                active
-              {% endif %}">
-      категории
-      {% if category %}
-        :<span>{{ category.name }}</span>
-      {% endif %}
-    </a>
-  </li>
-   <li>
-    <a href="{% url 'admin:orders' %}" class="active">
-      Заказы
-    </a>
-  </li>
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">INTERIOR  Админка:</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+            <a href="{% url 'index' %}" class="
+            nav-link active"
+            >
+              На сайт
+            </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link
+                  {% if request.resolver_match.url_name == 'users' %}
+                    active
+                  {% endif %}" href="{% url 'admin:users' %}">Пользователи</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link
+                   {% if request.resolver_match.url_name == 'categories' or request.resolver_match.url_name == category.name %}
+                       active
+                   {% endif %}" href="{% url 'admin:categories' %}">Категории / товары</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link
+                    {% if request.resolver_match.url_name == 'orders' or request.resolver_match.url_name == category.name %}
+                        active
+                    {% endif %}" href="{% url 'admin:orders' %}">Заказы</a>
+        </li>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
 
 
-</ul>

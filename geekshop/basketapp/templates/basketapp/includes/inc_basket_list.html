@@ -1,10 +1,12 @@
 {% load my_tags %}
 
 {% if basket_items %}
-    <div class="basket_summary">
-        <h2>В корзине {{ basket_items.0.total_quantity }} товаров общей стоимостью
-            {{ basket_items.0.total_cost }} руб.</h2>
-    </div>
+    {% with basket_info=basket_items.0.basket_info %}
+        <div class="basket_summary">
+            <h2>В корзине {{ basket_info.total_quantity }} товаров общей стоимостью
+                {{ basket_info.total_cost }} руб.</h2>
+        </div>
+    {% endwith %}
 {% endif %}
 
 
@@ -24,7 +26,7 @@
   <tbody>
         {% for item in basket_items %}
             <tr>
-                <th scope="row">1</th>
+                <th scope="row">{{ forloop.counter }}</th>
                 <td><img src="/media/{{ item.product.image }}"
                          alt="{{ item.product.short_desc }}"></td>
                 <td>{{ item.product.category.name }}</td>
