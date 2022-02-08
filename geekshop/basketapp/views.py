@@ -11,7 +11,7 @@ from django.views.generic import View
 from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
 from django.views.decorators.cache import never_cache
-
+from django.db.models import F
 
 # метод по условию ДЗ -
 # def basket_info(id):
@@ -78,7 +78,8 @@ class BasketAddView(View):
         basket = Basket.objects.filter(user=self.request.user, product=product).first()
         if not basket:
             basket = Basket(user=request.user, product=product)
-        basket.quantity += 1
+        # basket.quantity += 1
+        basket.quantity = F('quantity') + 1
         basket.save()
         # print(request.META.get('HTTP_REFERER'))
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
