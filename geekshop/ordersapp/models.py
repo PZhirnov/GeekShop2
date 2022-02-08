@@ -5,6 +5,7 @@ from django.db.models.signals import pre_save, pre_delete
 from django.dispatch import receiver
 from basketapp.models import Basket
 from django.utils.functional import cached_property
+from django.db.models import F
 
 class Order(models.Model):
     FORMING = 'FM'
@@ -112,15 +113,18 @@ class OrderItem(models.Model):
 def product_quantity_update_save(sender, update_fields, instance, **kwargs):
     if update_fields == 'quantity' or 'product':
         if instance.pk:
-            instance.product.quantity -= instance.quantity - \
-                                        sender.objects.get(pk=instance.pk).quantity
+            # print(instance.product.quantity)
+            # instance.product.quantity -= instance.quantity - sender.objects.get(pk=instance.pk).quantity
+            instance.product.quantity = F('quantity') - 1
         else:
-            instance.product.quantity -= instance.quantity
+            # instance.product.quantity -= instance.quantity
+            instance.product.quantity = F('quantity') - 1
         instance.product.save()
 
 
 @receiver(pre_delete, sender=OrderItem)
 @receiver(pre_delete, sender=Basket)
 def product_quantity_update_delete(sender, instance, **kwargs):
-    instance.product.quantity += instance.quantity
+    # instance.product.quantity += instance.quantity
+    instance.product.quantity = F('quantity') + 1
     instance.product.save()

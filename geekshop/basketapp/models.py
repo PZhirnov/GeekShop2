@@ -65,16 +65,15 @@ class Basket(models.Model):
         return Basket.objects.filter(user=user)
 
 
-    def save(self, *args, **kwargs):
-        if self.pk:
-            old_basket_item = Basket.objects.get(pk=self.pk)
-            self.product.quantity = self.quantity - old_basket_item.quantity
-        else:
-            self.product.quantity -= self.quantity
-        self.product.save()
-        super(self.__class__, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     if self.pk:
+    #         self.product.quantity -= self.quantity - self.__class__.get_item(self.pk).quantity
+    #     else:
+    #         self.product.quantity -= self.quantity
+    #     self.product.save()
+    #     super(self.__class__, self).save(*args, **kwargs)
 
-    def delete(self):
-        self.product.quantity += self.quantity
-        self.product.save()
-        super(self.__class__, self).delete()  # это обеспечивает доступ к унаследованному методу
+    # def delete(self):
+    #     self.product.quantity += self.quantity
+    #     self.product.save()
+    #     super(self.__class__, self).delete()  # это обеспечивает доступ к унаследованному методу

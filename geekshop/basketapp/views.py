@@ -69,19 +69,21 @@ class BasketListView(ListView):
 #     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
+
 @method_decorator(login_required, name='dispatch')
 class BasketAddView(View):
 
     def get(self, request, pk):
         print(request.user, pk)
         product = get_object_or_404(Product, pk=pk)
+        print(product, product.quantity)
         basket = Basket.objects.filter(user=self.request.user, product=product).first()
         if not basket:
-            basket = Basket(user=request.user, product=product)
+            basket = Basket(user=request.user, product=product, quantity=1)
+        else:
+            basket.quantity = F('quantity') + 1
         # basket.quantity += 1
-        basket.quantity = F('quantity') + 1
         basket.save()
-        # print(request.META.get('HTTP_REFERER'))
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 # @login_required
