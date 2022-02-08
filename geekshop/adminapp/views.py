@@ -474,6 +474,7 @@ def OrderStatus(request, pk):
     return render(request, 'adminapp/edit_status.html', content)
 
 
+# Обновление атрибутов при помощи update()
 def db_profile_by_type(prefix, type, queries):
     update_queries = list(filter(lambda x: type in x['sql'], queries))
     print(f'db_profile {type} for {prefix}:')
