@@ -51,13 +51,15 @@ class Basket(models.Model):
     #     _totalquantity = sum(list(map(lambda x: x.quantity, _items)))
     #     return _totalquantity
     #
-    # @property
-    # def total_cost(self):
-    #     "return total cost for user"
-    #     _items = Basket.objects.filter(user=self.user)
-    #     _totalcost = sum(list(map(lambda x: x.product_cost, _items)))
-    #     return _totalcost
-    #
+
+    # Метод используется в тесте
+    @property
+    def total_cost_for_test(self):
+        "return total cost for user"
+        _items = Basket.objects.filter(user=self.user)
+        _totalcost = sum(list(map(lambda x: x.product_cost, _items)))
+        return _totalcost
+
 
     @classmethod
     def get_items(self, user):
