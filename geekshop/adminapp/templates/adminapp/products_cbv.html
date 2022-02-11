@@ -5,10 +5,10 @@
 
 {% block content %}
   <div class="products_list">
-    {{ object_list.0.category.pk }}
+
     <button class="new_product">
-      <a href="{% url 'admin:product_create' cat_id %}">
-        новый продукт
+      <a href="{% url 'admin:product_create' cat_id %}" class="btn btn-primary">
+        + добавить новый продукт
       </a>
     </button>
 	<div class="paginator">
@@ -23,30 +23,15 @@
 					{% endif %}
     </div>
     {% for object in object_list %}
+    <br>
         <div class="product_record">
           <img
             src="{{ object.image|media_folder_products }}"
             alt="{{ object.name }}">
           <div class="product_name">
-            {{ object.name|title }}
+            <h2>{{ object.name|title }}</h2>
           </div>
-          <div class="product_actions">
-            <button>
-              <a href="{% url 'admin:product_read' object.pk %}">
-                подробнее
-              </a>
-            </button>
-            <button>
-              <a href="{% url 'admin:product_update' object.pk %}">
-                редактировать
-              </a>
-            </button>
-            <button>
-              <a href="{% url 'admin:product_delete' object.pk %}">
-                удалить
-              </a>
-            </button>
-          </div>
+
           <div class="summary">
             <b>цена</b>
             <p>{{ object.price|price_formatting }} руб</p>
@@ -57,6 +42,23 @@
             {{ object.short_desc|title }}
           </div>
         </div>
+        <div class="product_actions">
+            <button>
+              <a href="{% url 'admin:product_read' object.pk %}" class="btn btn-primary">
+                подробнее
+              </a>
+            </button>
+            <button>
+              <a href="{% url 'admin:product_update' object.pk %}" class="btn btn-primary">
+                редактировать
+              </a>
+            </button>
+            <button>
+              <a href="{% url 'admin:product_delete' object.pk %}" class="btn btn-primary">
+                удалить
+              </a>
+            </button>
+          </div>
     {% endfor%}
   </div>
 {% endblock %}

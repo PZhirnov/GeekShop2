@@ -21,11 +21,11 @@
                   <th scope="row">{{ forloop.counter }}</th>
                   <td>{{ object.is_active }}</td>
                   <td>{{ object.name|title }}</td>
-                  <td>{{ object.description|title }}</td>
+                  <td>{{ object.description }}</td>
                   <td>
                         <div class="category_actions">
                             <a href="{% url 'admin:products' object.pk %}" class="btn btn-primary">
-                                товары категории
+                                товары
                             </a>
                             <a href="{% url 'admin:category_update' object.pk %}" class="btn btn-secondary">
                                 редактировать

@@ -69,7 +69,7 @@ class UsersListView(ListView):
 #     return render(request, 'adminapp/user_update.html', content)
 
 @method_decorator(never_cache, name='dispatch')
-@method_decorator(login_required, name='dispatch')
+@method_decorator(user_passes_test(lambda u: u.is_superuser), name='dispatch')
 class UserCreate(CreateView):
     model = ShopUser
     success_url = reverse_lazy('admin:users')
@@ -97,7 +97,7 @@ class UserCreate(CreateView):
 #     return render(request, 'adminapp/user_update.html', content)
 
 @method_decorator(never_cache, name='dispatch')
-@method_decorator(login_required, name='dispatch')
+@method_decorator(user_passes_test(lambda u: u.is_superuser), name='dispatch')
 class UserUpdate(UpdateView):
     model = ShopUser
     success_url = reverse_lazy('admin:users')
@@ -127,7 +127,7 @@ class UserUpdate(UpdateView):
 #     return render(request, 'adminapp/user_delete.html', content)
 
 @method_decorator(never_cache, name='dispatch')
-@method_decorator(login_required, name='dispatch')
+@method_decorator(user_passes_test(lambda u: u.is_superuser), name='dispatch')
 class UserDelete(DeleteView):
     model = ShopUser
     template_name = 'adminapp/user_delete.html'
@@ -165,7 +165,7 @@ class UserDelete(DeleteView):
 #     }
 #     return render(request, 'adminapp/categories.html', content)
 @method_decorator(never_cache, name='dispatch')
-@method_decorator(login_required, name='dispatch')
+@method_decorator(user_passes_test(lambda u: u.is_superuser), name='dispatch')
 class CategoriesList(ListView):
     model = ProductCategory
     template_name = 'adminapp/categories.html'
@@ -188,13 +188,17 @@ class CategoriesList(ListView):
 #     content = {'title': title, 'update_form': category_form}
 #     return render(request, 'adminapp/category_update.html', content)
 @method_decorator(never_cache, name='dispatch')
-@method_decorator(login_required, name='dispatch')
+@method_decorator(user_passes_test(lambda u: u.is_superuser), name='dispatch')
 class ProductCategoryCreateView(CreateView):
     model = ProductCategory
     template_name = 'adminapp/category_update.html'
     success_url = reverse_lazy('admin:categories')
     fields = '__all__'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Создание категории'
+        return context
 
 # def category_update(request, pk):
 #     title = 'категории / обновление'
@@ -209,7 +213,7 @@ class ProductCategoryCreateView(CreateView):
 #     content = {'title': title, 'update_form': edit_category_form}
 #     return render(request, 'adminapp/category_update.html', content)
 @method_decorator(never_cache, name='dispatch')
-@method_decorator(login_required, name='dispatch')
+@method_decorator(user_passes_test(lambda u: u.is_superuser), name='dispatch')
 class ProductCategoryUpdateView(UpdateView):
     model = ProductCategory
     template_name = 'adminapp/category_update.html'
@@ -464,8 +468,9 @@ class OrderRead(DetailView):
 
 
 def OrderStatus(request, pk):
-    title = 'Изменение статуса заказка'
+
     order = get_object_or_404(Order, pk=pk)
+    title = f'Изменение статуса заказа № {order.id}'
     print(order.id)
     if request.method == 'POST':
         edit_form = OrderEditStatus(request.POST, instance=order)

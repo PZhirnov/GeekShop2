@@ -11,8 +11,7 @@
 			<div class="header clearfix">
 				<a href="index.html" class="logo"></a>
 					{% include 'includes/main_menu.html' %}
-				<a href="#" class="search"></a>
-                <a href="#" class="basket"></a>
+
 			</div>
 		</div>
 	</div>
@@ -76,6 +75,7 @@ height: 570px;">
 										<img src="{% static 'img/'%}icon-hover.png" alt="img">
 										<h4>{{ product.name }}</h4>
 													<p>{{ product.description }}</p>
+													<p>Цена: {{ product.price }}</p>
 												</div>
 											</a>
 										</div>

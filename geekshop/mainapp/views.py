@@ -201,7 +201,7 @@ def index(request):
 #     return render(request, 'mainapp/products.html', content)
 
 
-# @never_cache
+@cache_page(3600)
 def products(request, pk=None, page=1):
     title = 'продукты'
     # links_menu = ProductCategory.objects.filter(is_active=True)
@@ -303,11 +303,11 @@ def product(request, pk):
 
     content = {
         'title': title,
-        'links_menu': links_menu,
+        'main_menu': main_menu,
         'product': product,
         'basket': get_basket(request.user),
+        'links_menu': links_menu,
     }
-
     return render(request, 'mainapp/product.html', content)
 
 
