@@ -19,6 +19,9 @@ class Basket(models.Model):
     add_datetime = models.DateTimeField(verbose_name='время', auto_now_add=True)
     objects = BasketQuerySet.as_manager()  # Метод класса, который возвращает экземпляр Manager с копией методов QuerySet
 
+    def __str__(self):
+        return f' user_id: {self.user_id}, {self.product.name} - {self.quantity}'
+
     @property
     def product_cost(self):
         "return cost of all products this type"

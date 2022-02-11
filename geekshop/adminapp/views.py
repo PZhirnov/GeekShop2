@@ -38,7 +38,7 @@ from django.db.models import F
 #     }
 #     return render(request, 'adminapp/users.html', content)
 @method_decorator(never_cache, name='dispatch')
-@method_decorator(login_required, name='dispatch')
+@method_decorator(user_passes_test(lambda u: u.is_superuser), name='dispatch')
 class UsersListView(ListView):
     model = ShopUser
     template_name = 'adminapp/users.html'
