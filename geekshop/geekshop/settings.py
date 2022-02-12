@@ -91,6 +91,7 @@ if DEBUG:
        'template_profiler_panel.panels.template.TemplateProfilerPanel',
     ]
 
+from social_core.backends.vk import VKOAuth2
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
