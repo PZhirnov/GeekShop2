@@ -1059,14 +1059,14 @@ td:first-child {
 	padding: 0px 98px;
 }
 .related .title {
-	height: 343px;
+	height: 150px;
 	margin-right: 0;
 }
 .related .title h2 {
-	margin-top: 245px;
+	margin-top: 60px;
 }
 .related .title .explore {
-	margin-top: 262px;
+	margin-top: 100px;
 }
 .related-products {
 	margin-bottom: 120px;
@@ -1145,4 +1145,32 @@ td:first-child {
 
 .img_control {
     width: 70px;
+}
+
+.img_products_in_cat {
+    width: 500px;
+}
+
+.img_products_in_order {
+    width: 150px;
+}
+
+.product_actions {
+    margin-bottom: 20px;
+}
+
+.paginator {
+    margin: 20px;
+}
+
+.basket_record .row {
+    margin: 10px;
+}
+
+.img_products_in_all {
+    width: 365px;
+}
+
+.img_product_show {
+    width: 1050px;
 }

@@ -187,6 +187,8 @@ class CategoriesList(ListView):
 #         category_form = ProductCategoryEditForm()
 #     content = {'title': title, 'update_form': category_form}
 #     return render(request, 'adminapp/category_update.html', content)
+
+
 @method_decorator(never_cache, name='dispatch')
 @method_decorator(user_passes_test(lambda u: u.is_superuser), name='dispatch')
 class ProductCategoryCreateView(CreateView):
@@ -212,6 +214,8 @@ class ProductCategoryCreateView(CreateView):
 #         edit_category_form = ProductCategoryEditForm(instance=edit_category)
 #     content = {'title': title, 'update_form': edit_category_form}
 #     return render(request, 'adminapp/category_update.html', content)
+
+
 @method_decorator(never_cache, name='dispatch')
 @method_decorator(user_passes_test(lambda u: u.is_superuser), name='dispatch')
 class ProductCategoryUpdateView(UpdateView):
@@ -234,6 +238,8 @@ class ProductCategoryUpdateView(UpdateView):
                     update(price=F('price') * (1 - discount / 100))
                 db_profile_by_type(self.__class__, 'UPDATE', connection.queries)
         return super().form_valid(form)
+
+
 # def category_delete(request, pk):
 #     title = 'категории / удаление'
 #     delete_category = get_object_or_404(ProductCategory, pk=pk)
@@ -248,7 +254,7 @@ class ProductCategoryUpdateView(UpdateView):
 #     return render(request, 'adminapp/category_delete.html', content)
 
 @method_decorator(never_cache, name='dispatch')
-@method_decorator(login_required, name='dispatch')
+@method_decorator(user_passes_test(lambda u: u.is_superuser), name='dispatch')
 class ProductCategoryDeleteView(DeleteView):
     model = ProductCategory
     template_name = 'adminapp/category_delete.html'
@@ -285,7 +291,7 @@ class ProductCategoryDeleteView(DeleteView):
 
 # CBV c пагинацией - вывод в отдельный шаблон с окончанием CBV
 @method_decorator(never_cache, name='dispatch')
-@method_decorator(login_required, name='dispatch')
+@method_decorator(user_passes_test(lambda u: u.is_superuser), name='dispatch')
 class ProductsList(ListView):
     model = Product
     paginate_by = 3
@@ -320,12 +326,13 @@ class ProductsList(ListView):
 #     return render(request, 'adminapp/create_product.html', content)
 
 @method_decorator(never_cache, name='dispatch')
-@method_decorator(login_required, name='dispatch')
+@method_decorator(user_passes_test(lambda u: u.is_superuser), name='dispatch')
 class ProductCreateView(CreateView):
     model = Product
     template_name = 'adminapp/create_product.html'
     success_url = reverse_lazy('adminapp:categories')
     fields = '__all__'
+
 
     def get_context_data(self, **kwargs):
         context = super(ProductCreateView, self).get_context_data(**kwargs)

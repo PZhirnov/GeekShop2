@@ -1,9 +1,10 @@
 {% if object %}
+        <br>
        <div class="h2">Заказ №{{ object.pk }} от {{ object.created|date:"Y-m-d H:i:s" }}</div>
        <hr>
-       <div class="h4">заказчик: {{ user.last_name }} {{ user.first_name }} </div>
-       <div class="h4">обновлен: {{ object.updated|date:"Y-m-d H:i:s" }}</div>
-       <div class="h4">cтатус: {{ object.get_status_display }}</div>
+       <div class="h4">Заказчик: {{ object.user.last_name }} {{ object.user.first_name }} </div>
+       <div class="h4">Обновлен: {{ object.updated|date:"Y-m-d H:i:s" }}</div>
+       <div class="h4">Текущий cтатус: {{ object.get_status_display }}</div>
        <hr>
     <!--   <div class="h4">
            общее количество товаров: <span class="order_total_quantity">{{ object.get_total_quantity }}</span>
@@ -27,10 +28,10 @@
            </div>
        {% endwith %}
 
-    {% else %}
+{% else %}
        <div class="h2">Новый заказ</div>
        <hr>
-       <div class="h4">заказчик: {{ user.last_name }} {{ user.first_name }} </div>
+       <div class="h4">Заказчик: {{ object.user.last_name }} {{ object.user.first_name }} </div>
        {% if basket.0 %}
            <div class="h4">
                Общее количество товаров: <span class="order_total_quantity">{{ basket.0.get_total_quantity }}</span>

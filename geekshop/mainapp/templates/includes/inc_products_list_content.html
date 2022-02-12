@@ -16,9 +16,9 @@
 					{% if products.has_previous %}
 						<a href="{% url 'products:page' category.pk products.previous_page_number %}"> << </a>
 					{% endif %}
-					<span class="current">
-						страница {{ products.number }} из {{ products.paginator.num_pages }}
-					</span>
+						<span class="current">
+							страница {{ products.number }} из {{ products.paginator.num_pages }}
+						</span>
 					{% if products.has_next %}
 						<a href="{% url 'products:page' category.pk products.next_page_number %}"> >> </a>
 					{% endif %}
@@ -28,7 +28,7 @@
             		{% for product in products %}
 					<div class="block">
 						<a href="{% url 'products:product' product.pk %}">
-							<img src="/media/{{ product.image }}" style="object-fit: contain; width: 360px; height: 200px;" alt="">
+							<img src="/media/{{ product.image }}" class="img_products_in_all" alt="">
 							<div class="text">
 								<img src="{% static 'img/'%}icon-hover.png" alt="img">
 								<h4>{{ product.name }}</h4>
