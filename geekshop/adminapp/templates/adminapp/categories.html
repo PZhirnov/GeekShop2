@@ -7,7 +7,7 @@
         <table class="table">
             <thead>
             <tr>
-                <th>#</th>
+                <th>№</th>
                 <th>Активная</th>
                 <th>Категория</th>
                 <th>Описание</th>
@@ -19,7 +19,14 @@
               {% for object in object_list %}
               <tr>
                   <th scope="row">{{ forloop.counter }}</th>
-                  <td>{{ object.is_active }}</td>
+                  <td>
+                      {% if object.is_active %}
+                        да
+                      {% else %}
+                        нет
+                      {% endif %}
+
+                  </td>
                   <td>{{ object.name|title }}</td>
                   <td>{{ object.description }}</td>
                   <td>
@@ -33,9 +40,12 @@
                         </div>
                   </td>
                   <td>
-                        <a href="{% url 'admin:category_delete' object.pk %}" class="btn btn-warning">
-                                удалить
-                        </a>
+
+                      {% if object.is_active %}
+                        <a href="{% url 'admin:category_delete' object.pk %}" class="btn btn-warning">Удалить</a>
+                      {% else %}
+                        <a href="{% url 'admin:category_delete' object.pk %}" class="btn btn-danger">Удалить навсегда</a>
+                      {% endif %}
                   </td>
               <tr>
               {% endfor %}

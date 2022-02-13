@@ -126,7 +126,7 @@ def get_hot_product():
 
 # Похожие продукты
 def get_same_products(hot_product):
-    same_products = Product.objects.filter(category=hot_product.category).select_related().exclude(pk=hot_product.pk)[:3]
+    same_products = Product.objects.filter(category=hot_product.category).select_related().exclude(pk=hot_product.pk)[:4]
     return same_products
 
 
@@ -346,7 +346,7 @@ def products_ajax(request, pk=None, page=1):
                 category = get_category(pk)
                 products = get_products_in_category_orederd_by_price(pk)
 
-            paginator = Paginator(products, 3)
+            paginator = Paginator(products, 4)
             try:
                 products_paginator = paginator.page(page)
             except PageNotAnInteger:

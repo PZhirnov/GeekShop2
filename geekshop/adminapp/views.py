@@ -262,10 +262,21 @@ class ProductCategoryDeleteView(DeleteView):
     template_name = 'adminapp/category_delete.html'
     success_url = reverse_lazy('admin:categories')
 
+    def get_context_data(self, **kwargs):
+        context = super(ProductCategoryDeleteView, self).get_context_data(**kwargs)
+        if self.object.is_active:
+            context['msg'] = 'Выбранная категория будет неактивной.\n Для полного удаления повторите операцию.'
+        else:
+            context['msg'] = 'Выбранная категория будет удалена полностью . Вы уверены?'
+        return context
+
     def delete(self, request, *args, **kwarg):
         self.object = self.get_object()
-        self.object.is_active = False
-        self.object.save()
+        if self.object.is_active:
+            self.object.is_active = False
+            self.object.save()
+        else:
+            self.object.delete()
         return HttpResponseRedirect(self.get_success_url())
 
 
