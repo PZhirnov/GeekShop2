@@ -73,8 +73,9 @@ class UsersListView(ListView):
 class UserCreate(CreateView):
     model = ShopUser
     success_url = reverse_lazy('admin:users')
-    fields = '__all__'
+    # fields = '__all__'
     template_name = 'adminapp/user_update.html'
+    form_class = ShopUserAdminEditForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -101,8 +102,9 @@ class UserCreate(CreateView):
 class UserUpdate(UpdateView):
     model = ShopUser
     success_url = reverse_lazy('admin:users')
-    fields = '__all__'
+    # fields = '__all__'
     template_name = 'adminapp/user_update.html'
+    form_class = ShopUserAdminEditForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -330,9 +332,9 @@ class ProductsList(ListView):
 class ProductCreateView(CreateView):
     model = Product
     template_name = 'adminapp/create_product.html'
-    success_url = reverse_lazy('adminapp:categories')
+    # success_url = reverse_lazy('adminapp:products', args=['11'])
     fields = '__all__'
-
+    # form_class = ProductEditForm
 
     def get_context_data(self, **kwargs):
         context = super(ProductCreateView, self).get_context_data(**kwargs)
@@ -340,6 +342,11 @@ class ProductCreateView(CreateView):
         context['title'] = 'Создание продукта'
         context['category'] = category
         return context
+
+    def get_success_url(self, **kwargs):
+        data = super(ProductCreateView, self).get_context_data()
+        print(data)
+        return reverse('adminapp:products', args=[self.kwargs['pk']])
 
 
 # def product_read(request, pk):
@@ -380,16 +387,20 @@ class ProductDetailView(DetailView):
 class ProductUpdate(UpdateView):
     model = Product
     template_name = 'adminapp/create_product.html'
-    success_url = reverse_lazy('adminapp:categories')
-    fields = '__all__'
+    # success_url = reverse_lazy('adminapp:products', args=['9'])
+    # fields = '__all__'
+    form_class = ProductEditForm
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        category = ProductCategory.objects.filter(id=Product.objects.get(id=self.kwargs['pk']).category_id)
+        context = super(ProductUpdate, self).get_context_data(**kwargs)
+        category = ProductCategory.objects.filter(id=context.get('product').category.id)
         context['title'] = 'Редактирование продукта'
         context['category'] = category
         return context
 
+    def get_success_url(self):
+        data = super(ProductUpdate, self).get_context_data()
+        return reverse('adminapp:products', args=[data.get('product').category.id])
 
 # def product_delete(request, pk):
 #     title = 'продукт / удаление'

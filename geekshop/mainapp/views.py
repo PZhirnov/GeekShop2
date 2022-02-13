@@ -221,7 +221,7 @@ def products(request, pk=None, page=1):
             category = get_category(pk)
             products = get_products_in_category_orederd_by_price(pk)
 
-        paginator = Paginator(products, 3)
+        paginator = Paginator(products, 4)
         try:
             products_paginator = paginator.page(page)
         except PageNotAnInteger:

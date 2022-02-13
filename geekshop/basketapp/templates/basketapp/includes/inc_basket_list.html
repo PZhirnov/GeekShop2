@@ -4,7 +4,7 @@
     {% with basket_info=basket_items.0.basket_info %}
         <div class="basket_summary">
             <h2>В корзине {{ basket_info.total_quantity }} товаров общей стоимостью
-                {{ basket_info.total_cost }} руб.</h2>
+                {{ basket_info.total_cost|price_formatting  }} руб.</h2>
         </div>
     {% endwith %}
 {% endif %}
@@ -30,10 +30,10 @@
                          alt="{{ item.product.short_desc }}" style="object-fit: contain; width: 150px; height: 150px;"></td>
                 <td>{{ item.product.category.name }}</td>
                 <td>{{ item.product.name }}</td>
-                <td>{{ item.product.price }}</td>
+                <td>{{ item.product.price|price_formatting }}</td>
                 <td><input class = "" type="number" name="{{ item.pk }}" min="0"
                                          value="{{ item.quantity }}" onkeydown="return false"></td>
-                <td>{{ item.product_cost }}</td>
+                <td>{{ item.product_cost|price_formatting }}</td>
                 <td><button class="btn btn-round">
                         <a href="{% url 'basket:remove' item.pk %}" class="btn btn-primary">
                             удалить
