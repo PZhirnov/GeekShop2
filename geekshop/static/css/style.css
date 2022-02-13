@@ -1184,3 +1184,7 @@ td:first-child {
 .mstyle {
     margin: 10px;
 }
+
+.tr_ord {
+    padding-top: 0.75rem;
+}

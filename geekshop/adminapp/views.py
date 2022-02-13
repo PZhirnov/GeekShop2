@@ -41,6 +41,7 @@ from django.db.models import F
 @method_decorator(user_passes_test(lambda u: u.is_superuser), name='dispatch')
 class UsersListView(ListView):
     model = ShopUser
+    queryset = ShopUser.objects.all().order_by('-is_active', '-is_superuser', '-is_staff', 'username')
     template_name = 'adminapp/users.html'
 
     # Или можно было так применить декоратор
