@@ -137,7 +137,7 @@ class UserDelete(DeleteView):
 
     def delete(self, request, *args, **kwarg):
         self.object = self.get_object()
-        if self.object.is_active == False:
+        if not self.object .is_active:
             self.object.delete()
         else:
             self.object.is_active = False
@@ -146,12 +146,12 @@ class UserDelete(DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super(UserDelete, self).get_context_data(**kwargs)
-        self.object = self.get_object()
-        msg_1 = f'Данная операция сделает пользователя {self.object.username} неактивным и не удалит информацию о нем из базы.' \
+        del_user = self.get_object()
+        msg_1 = f'Данная операция сделает пользователя {del_user.username} неактивным и не удалит информацию о нем из базы.' \
                 'Повторный вызов операции приведет к его полному удалению.'
 
-        msg_2 = f"Данная операция полностью удалит пользователя {self.object.username} из базы. Продолжить?"
-        context['msg_warning'] = msg_1 if self.object.is_active else msg_2
+        msg_2 = f"Данная операция полностью удалит пользователя {del_user.username} из базы. Продолжить?"
+        context['msg_warning'] = msg_1 if del_user.is_active else msg_2
         return context
 
 
@@ -333,8 +333,8 @@ class ProductCreateView(CreateView):
     model = Product
     template_name = 'adminapp/create_product.html'
     # success_url = reverse_lazy('adminapp:products', args=['11'])
-    fields = '__all__'
-    # form_class = ProductEditForm
+    # fields = '__all__'
+    form_class = ProductEditForm
 
     def get_context_data(self, **kwargs):
         context = super(ProductCreateView, self).get_context_data(**kwargs)
@@ -399,8 +399,9 @@ class ProductUpdate(UpdateView):
         return context
 
     def get_success_url(self):
-        data = super(ProductUpdate, self).get_context_data()
-        return reverse('adminapp:products', args=[data.get('product').category.id])
+        # data = super(ProductUpdate, self).get_context_data()
+        data = self.get_object()
+        return reverse('adminapp:products', args=[data.category.id])
 
 # def product_delete(request, pk):
 #     title = 'продукт / удаление'
@@ -421,7 +422,16 @@ class ProductUpdate(UpdateView):
 class ProductDelete(DeleteView):
     model = Product
     template_name = 'adminapp/product_delete.html'
-    success_url = reverse_lazy('admin:categories')
+    # success_url = reverse_lazy('admin:categories')
+
+    def get_context_data(self, **kwargs):
+        context = super(ProductDelete, self).get_context_data(**kwargs)
+        # self.object = self.get_object()
+        if self.object.is_active:
+            context['msg'] = 'Продукт не будет удален из базы данных.\n Для полного удаления повторите операцию.'
+        else:
+            context['msg'] = 'Продукт будет полностью удален из базы данных. Вы уверены?'
+        return context
 
     def delete(self, request, *args, **kwarg):
         self.object = self.get_object()
@@ -431,6 +441,10 @@ class ProductDelete(DeleteView):
             self.object.is_active = False
             self.object.save()
         return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        data = super(ProductDelete, self).get_context_data()
+        return reverse('adminapp:products', args=[data.get('product').category.id])
 
 
 def admin_ajax(request):
@@ -486,7 +500,6 @@ class OrderRead(DetailView):
 
 
 def OrderStatus(request, pk):
-
     order = get_object_or_404(Order, pk=pk)
     title = f'Изменение статуса заказа № {order.id}'
     print(order.id)

@@ -59,9 +59,15 @@
                             </a>
                         </button>
                         <button>
-                            <a href="{% url 'admin:product_delete' object.pk %}" class="btn btn-primary">
-                            удалить
-                            </a>
+                            {% if object.is_active %}
+                                <a href="{% url 'admin:product_delete' object.pk %}" class="btn btn-primary">
+                                    удалить из текущих
+                                </a>
+                            {% else %}
+                                <a href="{% url 'admin:product_delete' object.pk %}" class="btn btn-danger">
+                                    удалить навсегда
+                                </a>
+                            {% endif %}
                         </button>
                     </div>
                 </div>

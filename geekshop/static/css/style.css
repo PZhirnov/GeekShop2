@@ -1174,3 +1174,7 @@ td:first-child {
 .img_product_show {
     width: 1050px;
 }
+
+.mstyle {
+    margin: 10px;
+}
