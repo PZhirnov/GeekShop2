@@ -51,7 +51,7 @@ height: 570px;">
 				<div class="description">
 					<h3 class="big-bold">{{ hot_product.name }}</h3>
 					<h3 class="red">горячее предложение</h3>
-					<p class="price">{{ hot_product.price|price_formatting }}<span>руб</span></p>
+					<p class="price">{{ hot_product.price|price_formatting }}<span> руб.</span></p>
 					<a href="{% url 'basket:add' hot_product.pk %}" class="red-button">
 						заказать <i class="fa fa-chevron-right" aria-hidden="true"></i>
 					</a>
@@ -75,7 +75,7 @@ height: 570px;">
 										<img src="{% static 'img/'%}icon-hover.png" alt="img">
 										<h4>{{ product.name }}</h4>
 													<p>{{ product.description }}</p>
-													<p>Цена: {{ product.price }}</p>
+													<p>Цена: {{ product.price|price_formatting }} руб.</p>
 												</div>
 											</a>
 										</div>
