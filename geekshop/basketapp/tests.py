@@ -32,6 +32,7 @@ class BasketTests(TestCase):
         products_in_user_basket = self.users_basket.objects.filter(user_id=self.user.id)
         sum_in_basket = 0  # тут храним итог
         for item_in_basket in products_in_user_basket:
+            print(item_in_basket.product.price)
             sum_in_basket += item_in_basket.product.price * item_in_basket.quantity
             print(
                 item_in_basket.product.id,
@@ -40,9 +41,8 @@ class BasketTests(TestCase):
                 item_in_basket.quantity,
                 item_in_basket.product.price * item_in_basket.quantity
             )
-        print(f"Сумма, полученная методом total_cost: {products_in_user_basket[0].total_cost} "
+        method_total_cost = products_in_user_basket[0].total_cost_for_test
+        print(f"Сумма, полученная запросом к БД: {method_total_cost} "
               f"Расчетное значение: {sum_in_basket}")
         # если все корректно, то не будет ошибки
-        self.assertEqual(sum_in_basket, products_in_user_basket[0].total_cost)
-
-
+        self.assertEqual(sum_in_basket, method_total_cost)

@@ -4,10 +4,10 @@
 {% block content %}
     <div class="categories_list">
 
-        <table class="table">
+        <table class="table tr_ord">
             <thead>
             <tr>
-                <th>#</th>
+                <th>№</th>
                 <th>Активная</th>
                 <th>Категория</th>
                 <th>Описание</th>
@@ -19,13 +19,20 @@
               {% for object in object_list %}
               <tr>
                   <th scope="row">{{ forloop.counter }}</th>
-                  <td>{{ object.is_active }}</td>
+                  <td>
+                      {% if object.is_active %}
+                        да
+                      {% else %}
+                        нет
+                      {% endif %}
+
+                  </td>
                   <td>{{ object.name|title }}</td>
-                  <td>{{ object.description|title }}</td>
+                  <td>{{ object.description }}</td>
                   <td>
                         <div class="category_actions">
                             <a href="{% url 'admin:products' object.pk %}" class="btn btn-primary">
-                                товары категории
+                                товары
                             </a>
                             <a href="{% url 'admin:category_update' object.pk %}" class="btn btn-secondary">
                                 редактировать
@@ -33,9 +40,12 @@
                         </div>
                   </td>
                   <td>
-                        <a href="{% url 'admin:category_delete' object.pk %}" class="btn btn-warning">
-                                удалить
-                        </a>
+
+                      {% if object.is_active %}
+                        <a href="{% url 'admin:category_delete' object.pk %}" class="btn btn-warning">Удалить</a>
+                      {% else %}
+                        <a href="{% url 'admin:category_delete' object.pk %}" class="btn btn-danger">Удалить навсегда</a>
+                      {% endif %}
                   </td>
               <tr>
               {% endfor %}

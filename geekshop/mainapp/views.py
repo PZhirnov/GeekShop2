@@ -126,7 +126,7 @@ def get_hot_product():
 
 # Похожие продукты
 def get_same_products(hot_product):
-    same_products = Product.objects.filter(category=hot_product.category).select_related().exclude(pk=hot_product.pk)[:3]
+    same_products = Product.objects.filter(category=hot_product.category).select_related().exclude(pk=hot_product.pk)[:4]
     return same_products
 
 
@@ -201,7 +201,7 @@ def index(request):
 #     return render(request, 'mainapp/products.html', content)
 
 
-# @never_cache
+# @cache_page(3600)
 def products(request, pk=None, page=1):
     title = 'продукты'
     # links_menu = ProductCategory.objects.filter(is_active=True)
@@ -221,7 +221,7 @@ def products(request, pk=None, page=1):
             category = get_category(pk)
             products = get_products_in_category_orederd_by_price(pk)
 
-        paginator = Paginator(products, 3)
+        paginator = Paginator(products, 4)
         try:
             products_paginator = paginator.page(page)
         except PageNotAnInteger:
@@ -303,11 +303,11 @@ def product(request, pk):
 
     content = {
         'title': title,
-        'links_menu': links_menu,
+        'main_menu': main_menu,
         'product': product,
         'basket': get_basket(request.user),
+        'links_menu': links_menu,
     }
-
     return render(request, 'mainapp/product.html', content)
 
 
@@ -346,7 +346,7 @@ def products_ajax(request, pk=None, page=1):
                 category = get_category(pk)
                 products = get_products_in_category_orederd_by_price(pk)
 
-            paginator = Paginator(products, 3)
+            paginator = Paginator(products, 4)
             try:
                 products_paginator = paginator.page(page)
             except PageNotAnInteger:

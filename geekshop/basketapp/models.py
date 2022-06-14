@@ -19,6 +19,9 @@ class Basket(models.Model):
     add_datetime = models.DateTimeField(verbose_name='время', auto_now_add=True)
     objects = BasketQuerySet.as_manager()  # Метод класса, который возвращает экземпляр Manager с копией методов QuerySet
 
+    def __str__(self):
+        return f' user_id: {self.user_id}, {self.product.name} - {self.quantity}'
+
     @property
     def product_cost(self):
         "return cost of all products this type"
@@ -51,13 +54,15 @@ class Basket(models.Model):
     #     _totalquantity = sum(list(map(lambda x: x.quantity, _items)))
     #     return _totalquantity
     #
-    # @property
-    # def total_cost(self):
-    #     "return total cost for user"
-    #     _items = Basket.objects.filter(user=self.user)
-    #     _totalcost = sum(list(map(lambda x: x.product_cost, _items)))
-    #     return _totalcost
-    #
+
+    # Метод используется в тесте
+    @property
+    def total_cost_for_test(self):
+        "return total cost for user"
+        _items = Basket.objects.filter(user=self.user)
+        _totalcost = sum(list(map(lambda x: x.product_cost, _items)))
+        return _totalcost
+
 
     @classmethod
     def get_items(self, user):

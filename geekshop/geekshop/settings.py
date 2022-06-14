@@ -52,7 +52,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'django.middleware.cache.UpdateCacheMiddleware',
+    # 'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -62,7 +62,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
-    'django.middleware.cache.FetchFromCacheMiddleware',
+    # 'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
 
@@ -91,6 +91,7 @@ if DEBUG:
        'template_profiler_panel.panels.template.TemplateProfilerPanel',
     ]
 
+from social_core.backends.vk import VKOAuth2
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
@@ -251,7 +252,7 @@ EMAIL_FILE_PATH = 'tmp/email-messages/'
 
 if os.name == 'posix':
    CACHE_MIDDLEWARE_ALIAS = 'default'
-   CACHE_MIDDLEWARE_SECONDS = 120
+   CACHE_MIDDLEWARE_SECONDS = 10
    CACHE_MIDDLEWARE_KEY_PREFIX = 'geekshop'
 
    CACHES = {
@@ -261,7 +262,7 @@ if os.name == 'posix':
        }
    }
 
-LOW_CACHE = False
+LOW_CACHE = True
 
 
 

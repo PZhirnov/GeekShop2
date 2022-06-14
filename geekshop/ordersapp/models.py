@@ -63,7 +63,7 @@ class Order(models.Model):
     def get_summary(self):
         items = self.orderitems.select_related()
         # Добавил кеширование
-        items = self.get_items_orders_cached;
+        # items = self.get_items_orders_cached;
         return {
             'total_cost': sum(list(map(lambda x: x.quantity * x.product.price, items))),
             'total_quantity': sum(list(map(lambda x: x.quantity, items)))
@@ -115,7 +115,7 @@ def product_quantity_update_save(sender, update_fields, instance, **kwargs):
         if instance.pk:
             # print(instance.product.quantity)
             # instance.product.quantity -= instance.quantity - sender.objects.get(pk=instance.pk).quantity
-            instance.product.quantity = F('quantity') - 1
+            instance.product.quantity = F('quantity') - 1  # доработано с помощью F
         else:
             # instance.product.quantity -= instance.quantity
             instance.product.quantity = F('quantity') - 1
