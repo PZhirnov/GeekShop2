@@ -7,9 +7,11 @@
     <div class="basket_list">
         {% include 'basketapp/includes/inc_basket_list.html' %}
     </div>
-    <button class="btn btn-round">
+
         <a href="{% url 'index' %}" class="btn btn-primary">
             на главную
         </a>
-    </button>
+        <a href="{% url 'index' %}" class="btn btn-primary">
+            Вернуться к покупкам
+        </a>
 {% endblock %}

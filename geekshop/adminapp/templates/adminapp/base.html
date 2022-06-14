@@ -1,5 +1,7 @@
-<!DOCTYPE html>
 {% load static %}
+
+<!DOCTYPE html>
+
 <html>
 <head>
 	<meta charset="utf-8">
@@ -17,28 +19,26 @@
 
     <!-- Блок для скриптов -->
     {% block js %}
-
+        <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+        <script src="{% static 'js/popper.min.js' %}"></script>
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
     {% endblock %}
 </head>
 
     <body>
-          <div class="">
+    {% block menu %}
+         {% include 'adminapp/includes/inc_menu.html' %}
+    {% endblock %}
+        <div class="container" style="margin-top: 70px;">
+
             <div class="h2 text-center head">
-              {{ title|title }}
+                {{ title }}
             </div>
-                {% block menu %}
-                      <div class="">
-                            {% include 'adminapp/includes/inc_menu.html' %}
-                      </div>
-                {% endblock %}
 
-          </div>
-          <div class="">
-                {% block content %}
+            {% block content %}
 
-                {% endblock %}
-          </div>
-
+            {% endblock %}
+        </div>
     </body>
 
 </html>

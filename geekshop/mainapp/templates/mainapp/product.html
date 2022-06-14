@@ -3,42 +3,42 @@
 
 {% load my_tags %}
 
-	{% block menu %}
+{% block menu %}
+	<div class="container">
+		<div class="hero-white">
 			<div class="header clearfix">
 				<a href="index.html" class="logo"></a>
-				  {% include 'includes/main_menu.html' %}
-				<a href="#" class="search"></a>
+					{% include 'includes/main_menu.html' %}
 			</div>
-	{% endblock %}
-
-
+		</div>
+	</div>
+{% endblock %}
 
 {% block content %}
 <div class="details">
-    <div class="links clearfix">
-      {% include 'includes/inc_categories_menu.html' %}
-    </div>
+			<div class="links clearfix">
+				{% include 'includes/inc_categories_menu.html' %}
+			</div>
 
     <div class="details-products">
       <div class="details-slider">
         <div class="slider-product">
-          <img src="/media/{{ product.image }}"
-               alt="{{ product.short_desc }}">
+          <img src="/media/{{ product.image }}" style="object-fit: contain; width: 570px; height: 570px;" alt="{{ product.short_desc }}">
         </div>
         <div class="slider-control">
           <div class="block">
             <a href="#">
-              <img src="/media/{{ product.image }}" alt="вариант 1">
+              <img src="/media/{{ product.image }}" class="img_control" alt="вариант 1">
             </a>
           </div>
           <div class="block">
             <a href="#">
-              <img src="/media/{{ product.image }}" alt="вариант 2">
+              <img src="/media/{{ product.image }}" class="img_control" alt="вариант 2">
             </a>
           </div>
           <div class="block">
             <a href="#">
-              <img src="/media/{{ product.image }}" alt="вариант 3">
+              <img src="/media/{{ product.image }}" class="img_control" alt="вариант 3">
             </a>
           </div>
         </div>

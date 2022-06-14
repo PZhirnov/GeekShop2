@@ -9,7 +9,9 @@ from django.views.generic.list import ListView
 from django.views.generic import CreateView, DeleteView
 from django.views.generic import View
 from django.utils.decorators import method_decorator
-
+from django.utils.functional import cached_property
+from django.views.decorators.cache import never_cache
+from django.db.models import F
 
 # метод по условию ДЗ -
 # def basket_info(id):
@@ -28,17 +30,25 @@ from django.utils.decorators import method_decorator
 #     }
 #     return render(request, 'basketapp/basket.html', content)
 
+
 @method_decorator(login_required, name='dispatch')
+@method_decorator(never_cache, name='dispatch')
 class BasketListView(ListView):
     model = Basket
     template_name = 'basketapp/basket.html'
 
+
+    def get_basket_user_cache(self):
+        return Basket.objects.filter(user=self.request.user).select_related().order_by('id')
+
     def get_queryset(self):
-        return Basket.objects.filter(user=self.request.user).order_by('product__category')
+        # return Basket.objects.filter(user=self.request.user).select_related().order_by('product__category')
+        return self.get_basket_user_cache
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        basket_items = Basket.objects.filter(user=self.request.user).order_by('product__category')
+        # basket_items = Basket.objects.filter(user=self.request.user).select_related().order_by('product__category')
+        basket_items = self.get_basket_user_cache
         context['basket_items'] = basket_items
         return context
 
@@ -60,18 +70,22 @@ class BasketListView(ListView):
 #     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
+
 @method_decorator(login_required, name='dispatch')
+@method_decorator(never_cache, name='dispatch')
 class BasketAddView(View):
 
     def get(self, request, pk):
         print(request.user, pk)
         product = get_object_or_404(Product, pk=pk)
+        print(product, product.quantity)
         basket = Basket.objects.filter(user=self.request.user, product=product).first()
         if not basket:
-            basket = Basket(user=request.user, product=product)
-        basket.quantity += 1
+            basket = Basket(user=request.user, product=product, quantity=1)
+        else:
+            basket.quantity = F('quantity') + 1 # доработано с помощью F
+        # basket.quantity += 1
         basket.save()
-        # print(request.META.get('HTTP_REFERER'))
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 # @login_required
@@ -82,6 +96,7 @@ class BasketAddView(View):
 
 
 @method_decorator(login_required, name='dispatch')
+@method_decorator(never_cache, name='dispatch')
 class BasketRemoveView(DeleteView):
     model = Basket
     success_url = reverse_lazy('basketapp:view')
@@ -91,7 +106,10 @@ def is_ajax(request):
     return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
 
 # UpdateView
+
+
 @login_required
+@never_cache
 def basket_edit(request, pk, quantity):
     print(is_ajax(request=request))
     print(pk, quantity)
@@ -105,14 +123,12 @@ def basket_edit(request, pk, quantity):
         else:
             new_basket_item.delete()
 
-        basket_items = Basket.objects.filter(user=request.user). \
-            order_by('product__category')
+        basket_items = Basket.objects.filter(user=request.user).order_by('id')
 
         content = {
             'basket_items': basket_items,
         }
-        result = render_to_string('basketapp/includes/inc_basket_list.html', \
-                                  content)
+        result = render_to_string('basketapp/includes/inc_basket_list.html', content)
         return JsonResponse({'result': result})
 
 

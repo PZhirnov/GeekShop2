@@ -2,14 +2,12 @@
 {% load static %}
 
 {% block content %}
-
     <form class="form-horizontal" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
         <input class="form-control" type="submit" value="сохранить">
     </form>
     <button class="btn btn-round form-control last">
-        Проверка {{ category.0.id }}
         <a href="{% url 'admin:products' category.0.id %}">
           К списку продуктов в категории "{{ category.name }}".
         </a>

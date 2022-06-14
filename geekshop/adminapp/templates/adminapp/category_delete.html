@@ -4,15 +4,18 @@
 
 {% block content %}
     <div class = 'confirmation'>
-        Вы уверены, что хотите удалить категорию " {{ object.name }}"?
-        <form action="{% url 'admin:category_delete' object.pk %}" method="post">
-            {% csrf_token %}
-            <input class="" type="submit" value="Удалить">
-        </form>
-            <button class="btn btn-success">
-                <a class="" href="{% url 'admin:categories' %}">
-                    Отмена
-                </a>
-            </button>
+        <h2>{{ msg }}</h2>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+            <form action="{% url 'admin:category_delete' object.pk %}" method="post">
+                {% csrf_token %}
+                <input class="btn btn-primary me-md-2 mstyle" type="submit" value="Удалить">
+            </form>
+
+                    <a class="btn btn-primary me-md-2 mstyle" href="{% url 'admin:categories' %}">
+                        Отмена
+                    </a>
+
+         </div>
     </div>
 {% endblock %}

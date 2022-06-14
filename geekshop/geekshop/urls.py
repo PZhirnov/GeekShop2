@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path
-from mainapp.views import index, products, contact, context
+from mainapp.views import index, products, contact
 from django.conf.urls.static import static
 from django.conf import settings
 from django.conf.urls import include
@@ -26,7 +26,7 @@ urlpatterns = [
     path('', index, name="index"),
     path('products/', include('mainapp.urls', namespace='products')),
     path('contact/', contact, name="contact"),
-    path('context', context),
+    # path('context', context),
     path('products_all', products, name='products_all'),
     path('products_home', products, name='products_home'),
     path('products_office', products, name='products_office'),

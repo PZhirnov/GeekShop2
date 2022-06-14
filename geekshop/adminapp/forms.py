@@ -9,7 +9,8 @@ from ordersapp.models import Order
 class ShopUserAdminEditForm(ShopUserEditForm):
     class Meta:
         model = ShopUser
-        fields = []
+        exclude = ()
+        # fields = []
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -19,12 +20,15 @@ class ShopUserAdminEditForm(ShopUserEditForm):
 
 
 class ProductCategoryEditForm(forms.ModelForm):
+    discount = forms.IntegerField(label='скидка', required=False, min_value=0, max_value=90, initial=0)
+
     class Meta:
         model = ProductCategory
-        fields = '__all__'
+        # fields = '__all__'
+        exclude = ()
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(ProductCategoryEditForm, self).__init__(*args, **kwargs)
         # print(self.fields)
         for field_name, field in self.fields.items():
             # print(field_name, field)
@@ -38,10 +42,11 @@ class ProductEditForm(forms.ModelForm):
         fields = '__all__'
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(ProductEditForm, self).__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
             field.help_text = ''
+            # print(field_name)
 
 
 class OrderEditStatus(forms.ModelForm):
@@ -51,7 +56,7 @@ class OrderEditStatus(forms.ModelForm):
         exclude = ('user',)
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(OrderEditStatus, self).__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
             # if field_name ==

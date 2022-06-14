@@ -4,6 +4,8 @@ from mainapp.models import Product
 from django.db.models.signals import pre_save, pre_delete
 from django.dispatch import receiver
 from basketapp.models import Basket
+from django.utils.functional import cached_property
+from django.db.models import F
 
 class Order(models.Model):
     FORMING = 'FM'
@@ -29,7 +31,7 @@ class Order(models.Model):
                               max_length=3,
                               choices=ORDER_STATUS_CHOICES,
                               default=FORMING)
-    is_active = models.BooleanField(verbose_name='активен', default=True)
+    is_active = models.BooleanField(verbose_name='активен', db_index=True, default=True)
 
     class Meta:
         ordering = ('-created',)
@@ -39,17 +41,33 @@ class Order(models.Model):
     def __str__(self):
         return 'Текущий заказ: {}'.format(self.id)
 
-    def get_total_quantity(self):
-        items = self.orderitems.select_related()
-        return sum(list(map(lambda x: x.quantity, items)))
+    # def get_total_quantity(self):
+    #     items = self.orderitems.select_related()
+    #     return sum(list(map(lambda x: x.quantity, items)))
+
+    @cached_property
+    def get_items_orders_cached(self):
+        return self.orderitems.select_related()
 
     def get_product_type_quantity(self):
-        items = self.orderitems.select_related()
+        # items = self.orderitems.select_related()
+        # Добавил кеширование
+        items = self.get_items_orders_cached;
         return len(items)
 
     def get_total_cost(self):
         items = self.orderitems.select_related()
         return sum(list(map(lambda x: x.quantity * x.product.price, items)))
+
+    # Создали вместо методов get_total_quantity и get_total_cost
+    def get_summary(self):
+        items = self.orderitems.select_related()
+        # Добавил кеширование
+        # items = self.get_items_orders_cached;
+        return {
+            'total_cost': sum(list(map(lambda x: x.quantity * x.product.price, items))),
+            'total_quantity': sum(list(map(lambda x: x.quantity, items)))
+        }
 
     # переопределяем метод, удаляющий объект
     def delete(self):
@@ -93,17 +111,20 @@ class OrderItem(models.Model):
 @receiver(pre_save, sender=OrderItem)
 @receiver(pre_save, sender=Basket)
 def product_quantity_update_save(sender, update_fields, instance, **kwargs):
-   if update_fields is 'quantity' or 'product':
-       if instance.pk:
-           instance.product.quantity -= instance.quantity - \
-                                        sender.objects.get(pk=instance.pk).quantity
-       else:
-           instance.product.quantity -= instance.quantity
-       instance.product.save()
+    if update_fields == 'quantity' or 'product':
+        if instance.pk:
+            # print(instance.product.quantity)
+            # instance.product.quantity -= instance.quantity - sender.objects.get(pk=instance.pk).quantity
+            instance.product.quantity = F('quantity') - 1  # доработано с помощью F
+        else:
+            # instance.product.quantity -= instance.quantity
+            instance.product.quantity = F('quantity') - 1
+        instance.product.save()
 
 
 @receiver(pre_delete, sender=OrderItem)
 @receiver(pre_delete, sender=Basket)
 def product_quantity_update_delete(sender, instance, **kwargs):
-   instance.product.quantity += instance.quantity
-   instance.product.save()
+    # instance.product.quantity += instance.quantity
+    instance.product.quantity = F('quantity') + 1
+    instance.product.save()

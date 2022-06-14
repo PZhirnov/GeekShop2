@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 from mainapp.models import Product
-
+from django.utils.functional import cached_property
 
 class BasketQuerySet(models.QuerySet):
 
@@ -19,24 +19,50 @@ class Basket(models.Model):
     add_datetime = models.DateTimeField(verbose_name='время', auto_now_add=True)
     objects = BasketQuerySet.as_manager()  # Метод класса, который возвращает экземпляр Manager с копией методов QuerySet
 
+    def __str__(self):
+        return f' user_id: {self.user_id}, {self.product.name} - {self.quantity}'
+
     @property
     def product_cost(self):
         "return cost of all products this type"
         return self.product.price * self.quantity
 
-    @property
-    def total_quantity(self):
-        "return total quantity for user"
-        _items = Basket.objects.filter(user=self.user)
-        _totalquantity = sum(list(map(lambda x: x.quantity, _items)))
-        return _totalquantity
+    @cached_property
+    def get_items_cached(self):
+        return self.user.basket.select_related()
 
-    @property
+    def total_quantity(self):
+        _items = self.get_items_cached
+        return sum(list(map(lambda x: x.quantity, _items)))
+
     def total_cost(self):
+        _items = self.get_items_cached
+        return sum(list(map(lambda x: x.product_cost, _items)))
+
+    # Добавлен метод, объединящий total_cost и total_quantity, чтобы протестировать  with в шаблоне
+    def basket_info(self):
+        _items = self.get_items_cached
+        basket_info = {
+            'total_quantity': sum(list(map(lambda x: x.quantity, _items))),
+            'total_cost': sum(list(map(lambda x: x.product_cost, _items))),
+        }
+        return basket_info
+    # @property
+    # def total_quantity(self):
+    #     "return total quantity for user"
+    #     _items = Basket.objects.filter(user=self.user)
+    #     _totalquantity = sum(list(map(lambda x: x.quantity, _items)))
+    #     return _totalquantity
+    #
+
+    # Метод используется в тесте
+    @property
+    def total_cost_for_test(self):
         "return total cost for user"
         _items = Basket.objects.filter(user=self.user)
         _totalcost = sum(list(map(lambda x: x.product_cost, _items)))
         return _totalcost
+
 
     @classmethod
     def get_items(self, user):
@@ -44,16 +70,15 @@ class Basket(models.Model):
         return Basket.objects.filter(user=user)
 
 
-    def save(self, *args, **kwargs):
-        if self.pk:
-            old_basket_item = Basket.objects.get(pk=self.pk)
-            self.product.quantity = self.quantity - old_basket_item.quantity
-        else:
-            self.product.quantity -= self.quantity
-        self.product.save()
-        super(self.__class__, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     if self.pk:
+    #         self.product.quantity -= self.quantity - self.__class__.get_item(self.pk).quantity
+    #     else:
+    #         self.product.quantity -= self.quantity
+    #     self.product.save()
+    #     super(self.__class__, self).save(*args, **kwargs)
 
-    def delete(self):
-        self.product.quantity += self.quantity
-        self.product.save()
-        super(self.__class__, self).delete()  # это обеспечивает доступ к унаследованному методу
+    # def delete(self):
+    #     self.product.quantity += self.quantity
+    #     self.product.save()
+    #     super(self.__class__, self).delete()  # это обеспечивает доступ к унаследованному методу
